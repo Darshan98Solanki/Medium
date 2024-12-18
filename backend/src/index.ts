@@ -1,8 +1,4 @@
 import { Hono } from 'hono'
-import { PrismaClient } from '@prisma/client/edge'
-import { withAccelerate } from '@prisma/extension-accelerate'
-import { decode, sign, verify } from 'hono/jwt'
-import { loginSchema, userSchema } from './validation'
 import { UserRouter } from './routes/user'
 import { BlogsRouter } from './routes/blogs'
 
