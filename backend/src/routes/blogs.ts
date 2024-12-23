@@ -151,6 +151,16 @@ BlogsRouter.get('/:id', async (c) => {
         const blog = await prisma.blog.findFirst({
             where: {
                 id: parseInt(body.id)
+            },
+            select:{
+                id:true,
+                title:true,
+                content:true,
+                auther:{
+                    select:{
+                        name:true,
+                    }
+                }
             }
         })
         c.status(200)
