@@ -20,22 +20,29 @@ UserRouter.use('/*', async (c, next) => {
 
   if (!auth || !auth.startsWith('Bearer ')) {
     c.status(401)
-    c.text("You are Unauthorized")
-    return
-  }
-
-  const token = c.req.header().authorization.split(' ')[1]
-
-  try {
-    const user = await verify(token, c.env.JWT_SECRET)
-    if (user && typeof user.id === 'number') {
-      c.set("userId", user.id)
-      await next()
-    }
-  } catch (e) {
-    c.status(401)
     return c.text("You are Unauthorized")
+  } else {
+    const token = c.req.header().authorization.split(' ')[1]
+
+    try {
+      const user = await verify(token, c.env.JWT_SECRET)
+      if (user && typeof user.id === 'number') {
+        c.set("userId", user.id)
+        await next()
+      }
+    } catch (e) {
+      c.status(401)
+      return c.text("You are Unauthorized")
+    }
   }
+})
+
+// me request for auto login
+UserRouter.get("/me", async (c) => {
+
+  c.status(200)
+  return c.json({ data: true })
+
 })
 
 // user sign up route 
