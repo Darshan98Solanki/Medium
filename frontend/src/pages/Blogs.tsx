@@ -12,7 +12,7 @@ export default function Blogs() {
         <Loader show={loading}/>
         <div className="flex justify-center">
             <div className="lg:w-1/2 max-w-1/2 mx-2 lg:mx-0">
-                {blogs.map(blog => <BlogCard id={blog.id} authername={blog.auther.name || "Anonymous"} title={blog.title} content={blog.content} publishedDate="10-10-2024"/>)}
+                {blogs.map((blog,index) => <BlogCard key={index} id={blog.id} authername={blog.auther.name || "Anonymous"} title={blog.title} content={blog.content} publishedDate="10-10-2024"/>)}
             </div>
         </div>
     </>

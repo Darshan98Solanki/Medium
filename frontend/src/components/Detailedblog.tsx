@@ -19,9 +19,7 @@ export default function DetailedBlog({ id }: { id: string }) {
                     <div className="text-slate-500 mt-2">
                         Posted on : 10-10-2024
                     </div>
-                    <div className="mt-4">
-                        {blog?.content}
-                    </div>
+                    <div className="mt-4" dangerouslySetInnerHTML={{__html:(blog?.content)?blog.content: ""}}></div>
                 </div>
                 <div className="lg:col-span-4 col-span-12 mt-16 lg:mt-0">
                     <div className="font-semibold">
