@@ -16,7 +16,7 @@ export default function DetailedBlog({ id }: { id: string }) {
                     <div className="text-5xl font-extrabold">
                         {blog?.title}
                     </div>
-                    <div className="text-slate-500 mt-1">
+                    <div className="text-slate-500 mt-2">
                         Posted on : 10-10-2024
                     </div>
                     <div className="mt-4">

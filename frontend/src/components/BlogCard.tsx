@@ -46,9 +46,11 @@ export default function BlogCard({
     </div>
 }
 
-export function Avatar({ name }: { name: string }) {
+export function Avatar({ name, onClick }: { name: string, onClick?: () => void}) {
 
-    return <div className="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+    return <div className={`relative inline-flex items-center ${onClick?`cursor-pointer` : `cursor-default`} justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600`}
+            onClick={onClick}
+        >
         <span className="font-medium text-gray-600 dark:text-gray-300 capitalize">{name.split(" ").map(name => name[0])}</span>
     </div>
 }
