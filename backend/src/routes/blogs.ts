@@ -141,7 +141,7 @@ BlogsRouter.get('/bulk', async (c) => {
 // get blog route
 BlogsRouter.get('/:id', async (c) => {
 
-    const body = await c.req.param()
+    const body = c.req.param()
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
@@ -170,5 +170,40 @@ BlogsRouter.get('/:id', async (c) => {
     } catch (e) {
         c.status(411)
         return c.text("Error while fetching blog")
+    }
+})
+
+// get blogs based on user id
+BlogsRouter.get('/author/:id', async (c) => {
+
+    const body = await c.req.param()
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate())
+
+
+    try {
+        const blog = await prisma.blog.findMany({
+            where: {
+                authorId: parseInt(body.id)
+            },
+            select:{
+                id:true,
+                title:true,
+                content:true,
+                auther:{
+                    select:{
+                        name:true,
+                    }
+                }
+            }
+        })
+        c.status(200)
+        return c.json({
+            blog
+        })
+    } catch (e) {
+        c.status(411)
+        return c.text("Error while fetching auther blog")
     }
 })
