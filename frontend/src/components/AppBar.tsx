@@ -1,8 +1,32 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar } from "./BlogCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { BACKEND_URL } from "@/config";
+import axios from "axios";
 
 export default function AppBar() {
+
+    
+    const navigator = useNavigate()
+
+    useEffect(() => {
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigator("/signin");
+            return;
+        }
+
+        axios.get(`${BACKEND_URL}api/v1/user/me`, {
+            headers: {
+                "authorization":token
+            }
+        }).catch(()=>{
+            navigator("/signin")
+        })
+
+    }, [])
+
 
     const [isOpen, setOpen] = useState(false)
 

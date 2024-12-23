@@ -1,12 +1,31 @@
 import { BACKEND_URL } from "@/config"
 import { UserSchema } from "@darshan98solanki/medium-common"
 import axios from "axios"
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { ToastContainer, toast } from 'react-toastify';
 import Loader from "./Loader"
 
 export default function Auth({ type }: { type: "signin" | "signup" }) {
+
+    const navigator = useNavigate()
+
+    useEffect(() => {
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigator("/signin");
+            return;
+        }
+
+        axios.get(`${BACKEND_URL}api/v1/user/me`, {
+            headers: {
+                "authorization": token
+            }
+        }).then(() => {
+            navigator("/blogs")
+        })
+    }, [navigator])
 
     const [postInput, setPostInputs] = useState<UserSchema>({
         name: "",
@@ -14,26 +33,25 @@ export default function Auth({ type }: { type: "signin" | "signup" }) {
         password: ""
     })
     const [isLoading, setLoading] = useState(false)
-    const navigator = useNavigate()
 
     async function sendRequest(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         try {
             setLoading(true)
-            const response = await axios.post(`${BACKEND_URL + `api/v1/user/${type === "signup"?"signup":"signin"}`}`, postInput)
-            localStorage.setItem("token", "Bearer "+response.data)
+            const response = await axios.post(`${BACKEND_URL + `api/v1/user/${type === "signup" ? "signup" : "signin"}`}`, postInput)
+            localStorage.setItem("token", "Bearer " + response.data)
             navigator("/blogs")
         } catch (err) {
-            if(axios.isAxiosError(err) && err.response)
+            if (axios.isAxiosError(err) && err.response)
                 toast.error(err.response.data)
-        }finally{
+        } finally {
             setLoading(false)
         }
 
     }
 
     return <>
-        <Loader show={isLoading}/>
+        <Loader show={isLoading} />
         <div className="flex w-full md:w-1/2 justify-center items-center bg-white">
             <form className="bg-white w-full max-w-sm px-4 md:w-1/2" onSubmit={sendRequest}>
                 <h2 className="justify-center flex mb-4 text-2xl font-bold">
@@ -72,7 +90,7 @@ export default function Auth({ type }: { type: "signin" | "signup" }) {
                 </span>
             </form>
         </div>
-        <ToastContainer/>
+        <ToastContainer />
     </>
 }
 
