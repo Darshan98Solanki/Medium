@@ -12,15 +12,9 @@ export default function Auth({ type }: { type: "signin" | "signup" }) {
 
     useEffect(() => {
 
-        const token = localStorage.getItem("token");
-        if (!token) {
-            navigator("/signin");
-            return;
-        }
-
         axios.get(`${BACKEND_URL}api/v1/user/me`, {
             headers: {
-                "authorization": token
+                "authorization": localStorage.getItem("token")
             }
         }).then(() => {
             navigator("/blogs")
@@ -65,10 +59,10 @@ export default function Auth({ type }: { type: "signin" | "signup" }) {
                         }))
                     }} /> : null
                 }
-                <InputBox placeholder="Email" onChange={(e) => {
+                <InputBox placeholder="Email" value={postInput.email} onChange={(e) => {
                     setPostInputs(c => ({
                         ...c,
-                        email: e.target.value
+                        email: e.target.value.trim().toLowerCase()
                     }))
                 }} />
                 <InputBox placeholder="Password" type="password" onChange={(e) => {
@@ -97,11 +91,12 @@ export default function Auth({ type }: { type: "signin" | "signup" }) {
 interface InputBoxType {
     placeholder: string,
     onChange: (e: ChangeEvent<HTMLInputElement>) => void,
-    type?: string
+    type?: string,
+    value?: string
 }
 
-function InputBox({ placeholder, onChange, type }: InputBoxType) {
+function InputBox({ placeholder, onChange, type, value }: InputBoxType) {
     return <div className="flex items-center border-2 py-2 px-3 rounded-2xl mb-4">
-        <input className="pl-2 outline-none border-none w-full" type={type || "text"} placeholder={placeholder} onChange={onChange} />
+        <input className="pl-2 outline-none border-none w-full" type={type || "text"} value={value} placeholder={placeholder} onChange={onChange} />
     </div>
 }

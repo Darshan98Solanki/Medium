@@ -4,11 +4,11 @@ import { useEffect, useState } from "react"
 
 interface BlogType {
     content: string,
-    title:string,
-    id:number,
-    authorId:number,
-    auther:{
-        name:string
+    title: string,
+    id: number,
+    authorId: number,
+    auther: {
+        name: string
     }
 }
 
@@ -21,7 +21,7 @@ export const useBlogs = () => {
 
         axios.get(`${BACKEND_URL}api/v1/blogs/bulk`, {
             headers: {
-                "authorization":localStorage.getItem("token")
+                "authorization": localStorage.getItem("token")
             }
         }).then(response => {
             setBlogs(response.data);
@@ -36,7 +36,7 @@ export const useBlogs = () => {
     }
 }
 
-export const useBlog = ({id} : {id:string}) => {
+export const useBlog = ({ id }: { id: string }) => {
 
     const [loading, setLoading] = useState(true)
     const [blog, setBlogs] = useState<BlogType>()
@@ -44,7 +44,32 @@ export const useBlog = ({id} : {id:string}) => {
     useEffect(() => {
         axios.get(`${BACKEND_URL}api/v1/blogs/${id}`, {
             headers: {
-                "authorization":localStorage.getItem("token")
+                "authorization": localStorage.getItem("token")
+            }
+        }).then(response => {
+            setBlogs(response.data.blog);
+        }).finally(() => {
+            setLoading(false)
+        })
+    }, [])
+
+    return {
+        loading,
+        blog
+    }
+}
+
+
+// get blogs based on authors
+export const useAuthorBlog = () => {
+
+    const [loading, setLoading] = useState(true)
+    const [blogs, setBlogs] = useState<BlogType[]>([])
+
+    useEffect(() => {
+        axios.get(`${BACKEND_URL}api/v1/blogs/author/`, {
+            headers: {
+                "authorization": localStorage.getItem("token")
             }
         }).then(response => {
             setBlogs(response.data.blog);
@@ -54,6 +79,6 @@ export const useBlog = ({id} : {id:string}) => {
 
     return {
         loading,
-        blog
+        blogs
     }
 }
