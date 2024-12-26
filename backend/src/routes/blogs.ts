@@ -144,18 +144,30 @@ BlogsRouter.get('/bulk', async (c) => {
     }).$extends(withAccelerate())
 
     try {
+        const filter = c.req.query("filter") 
+        const start = parseInt(c.req.query("start") || "0")
+        const end = parseInt(c.req.query("end") || "10")
         const blogs = await prisma.blog.findMany({
+            skip:start,
+            take:end,
+            where:{
+                title: {
+                    contains: filter,
+                    mode: 'insensitive'
+                }
+            },
             select:{
                 content:true,
                 id:true,
                 title:true,
                 authorId:true,
+                publishedOn:true,
                 auther:{
                     select:{
                         name:true,
                     }
                 }
-            }
+            },
         })
         c.status(200)
         return c.json(blogs)

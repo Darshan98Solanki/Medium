@@ -120,8 +120,21 @@ UserRouter.use('/*', async (c, next) => {
 // me request for auto login
 UserRouter.get("/me", async (c) => {
 
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate())
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: c.get("userId")
+    },
+    select: {
+      name: true,
+    }
+  })
+
   c.status(200)
-  return c.json({ data: true })
+  return c.json({ data: true, name:user?.name })
 
 })
 

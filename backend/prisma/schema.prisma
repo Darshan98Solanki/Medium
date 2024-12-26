@@ -19,7 +19,7 @@ model Blog{
   id          Int @id @default(autoincrement())
   title       String
   content     String
-  published   Boolean @default(false)
+  publishedOn DateTime @default(now())
 
   authorId    Int
   auther      User @relation(fields: [authorId], references: [id])
