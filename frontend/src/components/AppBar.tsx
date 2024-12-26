@@ -8,6 +8,7 @@ export default function AppBar() {
 
     
     const navigator = useNavigate()
+    const [name, setName] = useState("")
 
     useEffect(() => {
 
@@ -21,6 +22,8 @@ export default function AppBar() {
             headers: {
                 "authorization":token
             }
+        }).then((res)=>{
+            setName(res.data.name)
         }).catch(()=>{
             navigator("/signin")
         })
@@ -47,14 +50,14 @@ export default function AppBar() {
                         New Log
                     </button>
                 </Link>
-                <Avatar name="Darshan Solanki" onClick={toggleDown} />
+                <Avatar name={name} onClick={toggleDown} />
             </div>
         </div>
         {
-            isOpen && <div className="absolute right-0 me-2 -mt-6 rounded-sm w-64 bg-white border-l shadow-md">
+            isOpen && <div className="absolute z-50 right-0 me-2 -mt-6 rounded-sm w-64 bg-white border-l shadow-md">
                 <ul className="space-y-1">
                     <li>
-                        <Link to="#" className="block rounded px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+                        <Link to="/profile" className="block rounded px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700">
                             Profile
                         </Link>
                     </li>

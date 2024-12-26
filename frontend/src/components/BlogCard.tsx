@@ -1,7 +1,7 @@
 import { BACKEND_URL } from "@/config"
 import axios from "axios"
 import { Link, useNavigate } from "react-router-dom"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 
 interface blogCard {
     id: number,
@@ -43,7 +43,6 @@ export default function BlogCard({
     }
 
     return <div className="pb-3">
-        <ToastContainer />
         <article className="hover:animate-background rounded-xl bg-gradient-to-r from-purple-500 via-blue-500 to-blue-700 p-0.5 shadow-xl transition hover:bg-[length:400%_400%] hover:shadow-sm hover:[animation-duration:_4s]">
             <div className="rounded-[10px] bg-white p-4 sm:p-6">
                 <div className="flex">

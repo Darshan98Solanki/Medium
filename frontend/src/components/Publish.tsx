@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import AppBar from "./AppBar";
 import axios from "axios";
 import { BACKEND_URL } from "@/config";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { useNavigate, useParams } from "react-router-dom";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css'
@@ -89,7 +89,6 @@ export default function Publish() {
     return <>
         <AppBar />
         <Loader show={loading} />
-        <ToastContainer />
         <div className="flex justify-center w-full mt-16">
             <div className="max-w-screen-xl w-full mx-2 lg:mx-0">
                 <input type="text" value={title} className="bg-gray-50 w-full border border-gray-300 text-gray-900 block p-2.5 text-sm rounded-lg " placeholder="Title"

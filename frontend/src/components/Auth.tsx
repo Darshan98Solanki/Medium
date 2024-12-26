@@ -3,7 +3,7 @@ import { UserSchema } from "@darshan98solanki/medium-common"
 import axios from "axios"
 import { ChangeEvent, useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import Loader from "./Loader"
 
 export default function Auth({ type }: { type: "signin" | "signup" }) {
@@ -84,7 +84,6 @@ export default function Auth({ type }: { type: "signin" | "signup" }) {
                 </span>
             </form>
         </div>
-        <ToastContainer />
     </>
 }
 
@@ -92,11 +91,12 @@ interface InputBoxType {
     placeholder: string,
     onChange: (e: ChangeEvent<HTMLInputElement>) => void,
     type?: string,
-    value?: string
+    value?: string,
+    disabled?: boolean
 }
 
-function InputBox({ placeholder, onChange, type, value }: InputBoxType) {
+export function InputBox({ placeholder, onChange, type, value, disabled }: InputBoxType) {
     return <div className="flex items-center border-2 py-2 px-3 rounded-2xl mb-4">
-        <input className="pl-2 outline-none border-none w-full" type={type || "text"} value={value} placeholder={placeholder} onChange={onChange} />
+        <input className="pl-2 outline-none border-none w-full" type={type || "text"} disabled={disabled} value={value} placeholder={placeholder} onChange={onChange} />
     </div>
 }
