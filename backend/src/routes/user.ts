@@ -127,16 +127,15 @@ UserRouter.get("/me", async (c) => {
 
 
 // get profile data
-UserRouter.get("/:id", async (c) => {
+UserRouter.get("/", async (c) => {
 
-  const body = c.req.param()
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate())
 
   const user = await prisma.user.findUnique({
     where: {
-      id: parseInt(body.id)
+      id: c.get("userId")
     },
     select: {
       id: true,
