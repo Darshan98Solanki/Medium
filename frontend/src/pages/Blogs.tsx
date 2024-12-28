@@ -37,7 +37,7 @@ export default function Blogs() {
                 <div className="flex justify-center my-5">
                     <Pagination total={total} blogsPerPage={blogsPerPage} end={end} backWardClick={() => {
                         setStart(e => (e > 0) ? e - blogsPerPage : 0)
-                        setEnd(e => (e > total - blogsPerPage) ? e - blogsPerPage : e)
+                        setEnd(e => (start>0 && e > total - blogsPerPage) ? e - blogsPerPage : e)
                     }}
                         forWardClick={() => {
                             setStart(e => (e < total - blogsPerPage) ? e + blogsPerPage : e)
