@@ -124,17 +124,26 @@ UserRouter.get("/me", async (c) => {
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate())
 
-  const user = await prisma.user.findUnique({
-    where: {
-      id: c.get("userId")
-    },
-    select: {
-      name: true,
-    }
-  })
+  try {
 
-  c.status(200)
-  return c.json({ data: true, name:user?.name })
+    const user = await prisma.user.findUnique({
+      where: {
+        id: c.get("userId")
+      },
+      select: {
+        name: true,
+      }
+    })
+
+    c.status(200)
+    return c.json({ data: true, name: user?.name })
+  } catch (error) {
+    c.status(411)
+    return c.text("User is not authorized")
+  } finally {
+    // Clean up Prisma client to avoid connection leaks
+    await prisma.$disconnect();
+  }
 
 })
 
@@ -146,23 +155,33 @@ UserRouter.get("/", async (c) => {
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate())
 
-  const user = await prisma.user.findUnique({
-    where: {
-      id: c.get("userId")
-    },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      password: true
-    }
-  })
 
-  if (!user) {
-    c.status(404)
-    return c.text("User not found")
+  try {
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: c.get("userId")
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        password: true
+      }
+    })
+
+    if (!user) {
+      c.status(404)
+      return c.text("User not found")
+    }
+    return c.json(user)
+  } catch (error) {
+    c.status(411)
+    return c.text("User data is not found")
+  } finally {
+    // Clean up Prisma client to avoid connection leaks
+    await prisma.$disconnect();
   }
-  return c.json(user)
 })
 
 //update user profile
@@ -198,6 +217,9 @@ UserRouter.put("/update", async (c) => {
     } catch (e) {
       c.status(411)
       return c.text("User data is not updated")
+    } finally {
+      // Clean up Prisma client to avoid connection leaks
+      await prisma.$disconnect();
     }
   }
 })

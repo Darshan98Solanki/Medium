@@ -70,6 +70,9 @@ BlogsRouter.post('/', async (c) => {
     } catch (e) {
         c.status(411)
         return c.text("Error while creating a new blog")
+    } finally {
+        // Clean up Prisma client to avoid connection leaks
+        await prisma.$disconnect();
     }
 })
 
@@ -81,21 +84,24 @@ BlogsRouter.delete("/:id", async (c) => {
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
 
-    try{    
+    try {
         const removed = await prisma.blog.delete({
-            where:{
+            where: {
                 id: id
             }
         })
 
-        if(removed){
+        if (removed) {
             c.status(200)
             return c.text("blog deleted")
         }
 
-    }catch(e){
+    } catch (e) {
         c.status(411)
         return c.text("Error while deleting the blog")
+    } finally {
+        // Clean up Prisma client to avoid connection leaks
+        await prisma.$disconnect();
     }
 
 })
@@ -108,7 +114,7 @@ BlogsRouter.put('/', async (c) => {
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
 
-    if(!parseData.success){
+    if (!parseData.success) {
         c.status(411)
         return c.json(parseData.error.errors[0].message)
     }
@@ -130,6 +136,9 @@ BlogsRouter.put('/', async (c) => {
     } catch (e) {
         c.status(411)
         return c.text("Error while updating the blog")
+    } finally {
+        // Clean up Prisma client to avoid connection leaks
+        await prisma.$disconnect();
     }
 })
 
@@ -144,12 +153,12 @@ BlogsRouter.get('/bulk', async (c) => {
     }).$extends(withAccelerate())
 
     try {
-        const filter = c.req.query("filter") 
+        const filter = c.req.query("filter")
         const start = parseInt(c.req.query("start") || "0")
         const end = parseInt(c.req.query("end") || "10")
 
         const totalBlogs = await prisma.blog.findMany({
-            where:{
+            where: {
                 title: {
                     contains: filter,
                     mode: 'insensitive'
@@ -158,33 +167,51 @@ BlogsRouter.get('/bulk', async (c) => {
         })
 
         const blogs = await prisma.blog.findMany({
-            skip:start,
-            take:end,
-            where:{
+            skip: start,
+            take: end,
+            where: {
                 title: {
                     contains: filter,
                     mode: 'insensitive'
                 }
             },
-            select:{
-                content:true,
-                id:true,
-                title:true,
-                authorId:true,
-                publishedOn:true,
-                auther:{
-                    select:{
-                        name:true,
+            select: {
+                content: true,
+                id: true,
+                title: true,
+                authorId: true,
+                publishedOn: true,
+                auther: {
+                    select: {
+                        name: true,
                     }
                 },
             },
 
         })
+
+
+        const extractFirstTag = ({html}:{html:string}) => {
+            const match = html.match(/<\s*([^ >]+)[^>]*>.*?<\/\1>|<\s*([^ >]+)[^>]*\/>/);
+            return match ? match[0] : ''; // Return the first tag or an empty string if not found
+        };
+
+        const blogsWithFirstParagraph = blogs.map(blog => {
+            const firstParagraph = extractFirstTag({ html: blog.content });
+            return {
+                ...blog,
+                content: firstParagraph,
+            };
+        });
+
         c.status(200)
-        return c.json({totalBlogs:totalBlogs.length, blogs})
+        return c.json({ totalBlogs: totalBlogs.length, blogs:blogsWithFirstParagraph })
     } catch (e) {
         c.status(411)
         return c.text("Error while fetching blogs")
+    } finally {
+        // Clean up Prisma client to avoid connection leaks
+        await prisma.$disconnect();
     }
 })
 
@@ -202,14 +229,14 @@ BlogsRouter.get('/:id', async (c) => {
             where: {
                 id: parseInt(body.id)
             },
-            select:{
-                id:true,
-                title:true,
-                content:true,
-                publishedOn:true,
-                auther:{
-                    select:{
-                        name:true,
+            select: {
+                id: true,
+                title: true,
+                content: true,
+                publishedOn: true,
+                auther: {
+                    select: {
+                        name: true,
                     }
                 }
             }
@@ -237,13 +264,13 @@ BlogsRouter.get('/author/', async (c) => {
             where: {
                 authorId: c.get("userId")
             },
-            select:{
-                id:true,
-                title:true,
-                content:true,
-                auther:{
-                    select:{
-                        name:true,
+            select: {
+                id: true,
+                title: true,
+                content: true,
+                auther: {
+                    select: {
+                        name: true,
                     }
                 }
             }
@@ -255,5 +282,8 @@ BlogsRouter.get('/author/', async (c) => {
     } catch (e) {
         c.status(411)
         return c.text("Error while fetching auther blog")
+    } finally {
+        // Clean up Prisma client to avoid connection leaks
+        await prisma.$disconnect();
     }
 })
