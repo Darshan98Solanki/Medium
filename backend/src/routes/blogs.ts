@@ -147,6 +147,16 @@ BlogsRouter.get('/bulk', async (c) => {
         const filter = c.req.query("filter") 
         const start = parseInt(c.req.query("start") || "0")
         const end = parseInt(c.req.query("end") || "10")
+
+        const totalBlogs = await prisma.blog.findMany({
+            where:{
+                title: {
+                    contains: filter,
+                    mode: 'insensitive'
+                }
+            },
+        })
+
         const blogs = await prisma.blog.findMany({
             skip:start,
             take:end,
@@ -166,11 +176,12 @@ BlogsRouter.get('/bulk', async (c) => {
                     select:{
                         name:true,
                     }
-                }
+                },
             },
+
         })
         c.status(200)
-        return c.json(blogs)
+        return c.json({totalBlogs:totalBlogs.length, blogs})
     } catch (e) {
         c.status(411)
         return c.text("Error while fetching blogs")
@@ -195,6 +206,7 @@ BlogsRouter.get('/:id', async (c) => {
                 id:true,
                 title:true,
                 content:true,
+                publishedOn:true,
                 auther:{
                     select:{
                         name:true,
