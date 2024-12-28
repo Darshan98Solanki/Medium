@@ -64,8 +64,8 @@ export default function Publish() {
                 headers: {
                     "Authorization": localStorage.getItem("token")
                 }
-            }).then(() => {
-                navigator("/blogs")
+            }).then((response) => {
+                navigator(`/blog/${response.data.id}`)
             }).catch(err => {
                 toast.error(err.response.data);
             }).finally(() => {
@@ -90,7 +90,7 @@ export default function Publish() {
         <AppBar />
         <Loader show={loading} />
         <div className="flex justify-center w-full mt-16">
-            <div className="max-w-screen-xl w-full mx-2 lg:mx-0">
+            <div className="max-w-screen-xl w-full mx-2 xl:mx-0">
                 <input type="text" value={title} className="bg-gray-50 w-full border border-gray-300 text-gray-900 block p-2.5 text-sm rounded-lg " placeholder="Title"
                     onChange={(e) => {
                         setTitle(e.target.value);
@@ -99,7 +99,7 @@ export default function Publish() {
                 <div className="mt-5 h-1/2">
                     <ReactQuill defaultValue={content} className="h-full" modules={modules} theme="snow" value={content} onChange={(e) => setContent(e)} />
                 </div>
-                <div className="mt-20 lg:mt-14">
+                <div className="mt-28 sm:mt-20 lg:mt-14">
                     <p className="ms-auto text-xs text-gray-500 dark:text-gray-400">Remember, contributions to this topic should follow the <b>Etiquette</b></p>
                     <div className="flex items-center justify-end px-3 py-2 border-t">
                         <button type="submit" onClick={handlePost} disabled={loading} className="py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">

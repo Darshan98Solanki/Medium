@@ -7,31 +7,39 @@ interface BlogType {
     title: string,
     id: number,
     authorId: number,
+    publishedOn:string,
     auther: {
         name: string
     }
 }
 
-export const useBlogs = () => {
+export const useBlogs = ({ filter,start, blogsPerPage }: { filter: string, start:number, blogsPerPage:number }) => {
 
     const [loading, setLoading] = useState(true)
+    const [total, setTotal] = useState(0)
     const [blogs, setBlogs] = useState<BlogType[]>([])
 
     useEffect(() => {
-
-        axios.get(`${BACKEND_URL}api/v1/blogs/bulk`, {
-            headers: {
-                "authorization": localStorage.getItem("token")
-            }
-        }).then(response => {
-            setBlogs(response.data);
-            setLoading(false)
-        })
-
-    }, [])
+        setLoading(true)
+        const time = setTimeout(() => {
+            axios.get(`${BACKEND_URL}api/v1/blogs/bulk?filter=${filter}&start=${start}&end=${blogsPerPage}`, {
+                headers: {
+                    "authorization": localStorage.getItem("token")
+                }
+            }).then(response => {
+                setBlogs(response.data.blogs);
+                setTotal(response.data.totalBlogs);
+                setLoading(false)
+            })
+        }, 300)
+        return () => {
+            clearTimeout(time)
+        }
+    }, [filter,start, blogsPerPage])
 
     return {
         loading,
+        total,
         blogs
     }
 }

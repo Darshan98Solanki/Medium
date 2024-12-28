@@ -9,7 +9,8 @@ interface blogCard {
     title: string,
     content: string,
     publishedDate: string,
-    editable: boolean
+    editable: boolean,
+    key: number
 }
 
 export default function BlogCard({
@@ -18,22 +19,21 @@ export default function BlogCard({
     title,
     content,
     publishedDate,
-    editable
+    editable,
+    key
 }: blogCard) {
 
     const navigator = useNavigate()
 
     function deleteLog({ id }: { id: number }) {
 
+        toast.success("Deleted Successfully Refreshing...")
         axios.delete(`${BACKEND_URL}api/v1/blogs/${id}`, {
             headers: {
                 Authorization: localStorage.getItem('token')
             }
         }).then(() => {
-            toast.success("Deleted Successfully Refreshing...")
-            setTimeout(() => {
-                navigator(0)
-            },1500)
+            navigator(0)
         }
         ).catch(err => {
             toast.error(err.response.data)
@@ -42,7 +42,7 @@ export default function BlogCard({
 
     }
 
-    return <div className="pb-3">
+    return <div className="pb-3" key={key}>
         <article className="hover:animate-background rounded-xl bg-gradient-to-r from-purple-500 via-blue-500 to-blue-700 p-0.5 shadow-xl transition hover:bg-[length:400%_400%] hover:shadow-sm hover:[animation-duration:_4s]">
             <div className="rounded-[10px] bg-white p-4 sm:p-6">
                 <div className="flex">
@@ -57,7 +57,7 @@ export default function BlogCard({
                             <div className="flex ms-5">
                                 {/* Edit Button */}
                                 <Link to={`/edit/${id}`} >
-                                    <svg className="h-4 lg:h-6 w-4 lg:w-6 inline-block align-middle mt-2   text-blue-500" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                                    <svg className="h-4 lg:h-6 w-4 lg:w-6 inline-block align-middle mt-2 text-blue-500" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                                 </Link>
 
                                 {/* Delete Button */}
@@ -74,7 +74,7 @@ export default function BlogCard({
                         {title}
                     </h3>
                 </Link>
-                <h3 className="mt-0.5 text-md font-thin text-gray-900" dangerouslySetInnerHTML={{ __html: (content.length > 100) ? content.slice(0, 100) + "..." : content }}></h3>
+                <h3 className="mt-0.5 text-md font-thin text-gray-900" dangerouslySetInnerHTML={{ __html: (content.length > 45) ? content.slice(0, 45) + "..." : content }}></h3>
                 <div className="mt-4 flex flex-wrap gap-1">
                     <span className="whitespace-nowrap rounded-full bg-purple-100 px-2.5 py-0.5 text-xs text-purple-600">
                         {`${(content.length / 100 > 10) ? 10 : Math.ceil(content.length / 100)} min read`}
@@ -85,11 +85,11 @@ export default function BlogCard({
     </div>
 }
 
-export function Avatar({ name, onClick }: { name: string, onClick?: () => void }) {
+export function Avatar({ name, onClick }: { name: string, loading?: boolean, onClick?: () => void }) {
 
     return <div className={`relative inline-flex items-center ${onClick ? `cursor-pointer` : `cursor-default`} justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600`}
         onClick={onClick}
     >
-        <span className="font-medium text-gray-600 dark:text-gray-300 capitalize">{name.split(" ").map(name => name[0])}</span>
+        <span className="font-medium text-gray-600 dark:text-gray-300 capitalize">{(name) ? name.split(" ").map(name => name[0]) : "❔"}</span>
     </div>
 }
