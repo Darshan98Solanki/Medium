@@ -13,7 +13,7 @@ export default function DetailedBlog({ id }: { id: string }) {
             (loading) ?
                 <BlogSkeleton /> :
                 <div className="flex justify-center">
-                    <div className="grid grid-cols-12 px-10 w-full mt-12 max-w-screen-xl">
+                    <div className="grid grid-cols-12 px-10 w-full my-12 max-w-screen-xl">
                         <div className="lg:col-span-8 col-span-12">
                             <div className="text-5xl font-extrabold">
                                 {blog?.title}
