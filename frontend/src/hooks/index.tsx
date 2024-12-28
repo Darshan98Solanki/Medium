@@ -80,7 +80,7 @@ export const useAuthorBlog = () => {
                 "authorization": localStorage.getItem("token")
             }
         }).then(response => {
-            setBlogs(response.data.blog);
+            setBlogs(response.data.blogs);
             setLoading(false)
         })
     }, [])

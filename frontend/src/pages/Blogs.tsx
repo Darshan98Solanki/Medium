@@ -15,7 +15,7 @@ export default function Blogs() {
     const [end, setEnd] = useState(blogsPerPage)
 
     const { loading, total, blogs } = useBlogs({ filter, start, blogsPerPage })
-    console.log(total, blogs.length)
+    
     return <>
         <AppBar />
         <SearchBar onChange={(e) => {

@@ -14,7 +14,7 @@ export default function ProfileBlog() {
             <div className="lg:w-1/2 lg:max-w-1/2 w-full mx-2 lg:mx-0">
                 {
                     loading ? Array(4).fill(0).map((_,index)=><BlogListSkeleton index={index}/>)
-                    : blogs.length > 0 ? (blogs.map((blog, index) => <BlogCard editable={true} key={index} id={blog.id} authername={blog.auther.name || "Anonymous"} title={blog.title} content={blog.content} publishedDate="10-10-2024" />)) : <NoLogsFound />
+                    : blogs ? (blogs.map((blog, index) => <BlogCard editable={true} key={index} id={blog.id} authername={blog.auther.name || "Anonymous"} title={blog.title} content={blog.content} publishedDate="10-10-2024" />)) : <NoLogsFound />
                 }
             </div>
         </div>
