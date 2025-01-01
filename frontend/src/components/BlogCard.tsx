@@ -73,13 +73,13 @@ export default function BlogCard({
                     <h3 className="mt-0.5 text-xl font-semibold text-gray-900">
                         {title}
                     </h3>
-                </Link>
                 <h3 className="mt-0.5 text-md font-thin text-gray-900" dangerouslySetInnerHTML={{ __html: (content.length > 45) ? content.slice(0, 45) + "..." : content }}></h3>
                 <div className="mt-4 flex flex-wrap gap-1">
                     <span className="whitespace-nowrap rounded-full bg-purple-100 px-2.5 py-0.5 text-xs text-purple-600">
                         {`${(content.length / 1000 > 10) ? 10 : Math.ceil(content.length / 100)} min read`}
                     </span>
                 </div>
+                </Link>
             </div>
         </article>
     </div>

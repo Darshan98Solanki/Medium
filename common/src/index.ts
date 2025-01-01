@@ -7,6 +7,13 @@ export const userSchema = zod.object({
     password: zod.string().min(8, {message:"password must be 8 char long"})
 })
 
+// user Update Schema
+export const updateUserSchema = zod.object({
+    email: zod.string({message:"email is required"}).email({message:"please enter valid email"}),
+    name: zod.string().min(2, {message:"username length is too short"}).optional(),
+    password: zod.string().min(8, {message:"password must be 8 char long"}).optional()
+})
+
 // user login schema
 export const loginSchema = zod.object({
     email: zod.string({message:"email is required"}).email({message:"please enter valid email"}),
@@ -14,13 +21,13 @@ export const loginSchema = zod.object({
 }) 
 
 // Post Blog Schema
-export const PostBolgSchema = zod.object({
+export const postBlogSchema = zod.object({
     title: zod.string({message:"title is required"}).min(5, {message:"Title must be at least 5 characters"}),
     content: zod.string({message:"content is required"}).min(30, {message:"Content must be at least 30 characters"}),
 })
 
 // Update Blog schema
-export const UpdateBolgSchema = zod.object({
+export const updateBlogSchema = zod.object({
     title: zod.string({message:"title is required"}).min(5, {message:"Title must be at least 5 characters"}),
     content: zod.string({message:"content is required"}).min(30, {message:"Content must be at least 30 characters"}),
     id: zod.number({message:"id is required"}).min(1, {message:"Some error occurred please check"}),
@@ -30,5 +37,6 @@ export const UpdateBolgSchema = zod.object({
 // infer schema which will used in frontend
 export type UserSchema = zod.infer<typeof userSchema>
 export type LoginSchema = zod.infer<typeof loginSchema>
-export type PostBlogSchema = zod.infer<typeof PostBolgSchema>
-export type UpdateBlogSchema = zod.infer<typeof UpdateBolgSchema>
+export type PostBlogSchema = zod.infer<typeof postBlogSchema>
+export type UpdateBlogSchema = zod.infer<typeof updateBlogSchema>
+export type UpdateUserSchema = zod.infer<typeof updateUserSchema>

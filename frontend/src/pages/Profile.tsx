@@ -23,25 +23,36 @@ export default function Profile() {
         }).then(response => {
             setName(response.data.name);
             setEmail(response.data.email);
-            setPassword(response.data.password);
         }).finally(() => {
             setLoading(false)
         })
+
     }, [])
 
-    const handleUpdate = async (event: React.FormEvent<HTMLFormElement>) =>{
+    const handleUpdate = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+
+        const data: {email:string, name?: string, password?: string } = {email}
+
+        data.name = name?name:""
+
+        if (password)
+            data.password = password
 
         try {
             setLoading(true)
-            await axios.put(`${BACKEND_URL + `api/v1/user/update`}`, { name, email, password }, {
+            await axios.put(`${BACKEND_URL + `api/v1/user/update`}`,data, {
                 headers: {
                     "Authorization": localStorage.getItem("token")
                 }
+            }).then((res) => {
+                toast.success(res.data)
+            }).catch((err) => {
+                console.log(err)
+                toast.error(err.response.data)
             })
-            toast.success(`User updated successfully`)
         } catch (err) {
-
+            toast.error("something gets wrong")
         } finally {
             setLoading(false)
         }
@@ -59,10 +70,10 @@ export default function Profile() {
                     <InputBox placeholder="Email" value={email} disabled={true} onChange={(e) => {
                         setEmail(e.target.value)
                     }} />
-                    <InputBox placeholder="Name" value={name} onChange={(e) => {
+                    <InputBox placeholder="Name (Optional)" value={name} onChange={(e) => {
                         setName(e.target.value);
                     }} />
-                    <InputBox placeholder="Password" value={password} onChange={(e) => {
+                    <InputBox placeholder="Password (Optional)" value={password} onChange={(e) => {
                         setPassword(e.target.value);
                     }} />
                     <button type="submit" className="block w-full bg-indigo-600 mt-4 py-2 rounded-2xl text-white font-semibold mb-2">Update Profile</button>
