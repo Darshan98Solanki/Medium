@@ -2,7 +2,8 @@ import { Hono } from 'hono'
 import { PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { sign, verify } from 'hono/jwt'
-import { loginSchema, userSchema } from '@darshan98solanki/medium-common'
+import { loginSchema, updateUserSchema, UpdateUserSchema, userSchema } from '@darshan98solanki/medium-common'
+import crypto from "crypto-js"
 
 export const UserRouter = new Hono<{
   Bindings: {
@@ -31,12 +32,11 @@ UserRouter.post('/signup', async (c) => {
 
     // if duplicate email address is used
     try {
-
       const user = await prisma.user.create({
         data: {
           name: userData.data.name,
           email: userData.data.email,
-          password: userData.data.password
+          password: crypto.AES.encrypt(userData.data.password, c.env.JWT_SECRET).toString()
         }
       })
 
@@ -73,14 +73,19 @@ UserRouter.post('/signin', async (c) => {
       const user = await prisma.user.findFirst({
         where: {
           email: userData.data.email,
-          password: userData.data.password
+        },
+        select: {
+          password: true,
+          id: true
         }
       })
 
-      if (!user) {
+      if (userData.data.password !== crypto.AES.decrypt(user?.password || "", c.env.JWT_SECRET).toString(crypto.enc.Utf8)) {
         c.status(403)
         return c.text("Email or password incorrect")
-      } else {
+      }
+
+      if (user) {
         const jwt = await sign({
           id: user.id
         }, c.env.JWT_SECRET)
@@ -89,7 +94,7 @@ UserRouter.post('/signin', async (c) => {
 
     } catch (e) {
       c.status(411)
-      return c.text("User is already exist with this email")
+      return c.text("Some error while login")
     }
   }
 })
@@ -165,8 +170,7 @@ UserRouter.get("/", async (c) => {
       select: {
         id: true,
         email: true,
-        name: true,
-        password: true
+        name: true
       }
     })
 
@@ -189,7 +193,7 @@ UserRouter.put("/update", async (c) => {
 
   const body = await c.req.json()
 
-  const userData = userSchema.safeParse(body)
+  const userData = updateUserSchema.safeParse(body)
 
   if (!userData.success) {
     c.status(411)
@@ -199,16 +203,22 @@ UserRouter.put("/update", async (c) => {
       datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
 
+    const data : { name?:string, password?:string } = {}
+
+    if(userData.data.name)
+      data.name = userData.data.name
+
+    if(userData.data.password)
+      data.password = crypto.AES.encrypt(userData.data.password, c.env.JWT_SECRET).toString()
+
+
     try {
 
       const user = await prisma.user.update({
         where: {
           email: userData.data.email,
         },
-        data: {
-          name: userData.data.name,
-          password: userData.data.password
-        }
+        data:data
       })
       if (user) {
         c.status(200)

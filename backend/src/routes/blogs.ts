@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { Hono } from 'hono'
 import { verify } from 'hono/jwt'
-import { PostBolgSchema, UpdateBolgSchema } from '@darshan98solanki/medium-common'
+import { postBlogSchema, updateBlogSchema } from '@darshan98solanki/medium-common'
 
 export const BlogsRouter = new Hono<{
     Bindings: {
@@ -41,7 +41,9 @@ BlogsRouter.use('/*', async (c, next) => {
 // create blog route
 BlogsRouter.post('/', async (c) => {
 
-    const parseData = PostBolgSchema.safeParse(await c.req.json())
+    console.log("lol")
+
+    const parseData = postBlogSchema.safeParse(await c.req.json())
     const userId = c.get("userId")
 
     const prisma = new PrismaClient({
@@ -109,7 +111,7 @@ BlogsRouter.delete("/:id", async (c) => {
 // update blog route
 BlogsRouter.put('/', async (c) => {
 
-    const parseData = UpdateBolgSchema.safeParse(await c.req.json())
+    const parseData = updateBlogSchema.safeParse(await c.req.json())
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate())
@@ -275,10 +277,23 @@ BlogsRouter.get('/author/', async (c) => {
                 }
             }
         })
+
+        const extractFirstTag = ({html}:{html:string}) => {
+            const match = html.match(/<\s*([^ >]+)[^>]*>.*?<\/\1>|<\s*([^ >]+)[^>]*\/>/);
+            return match ? match[0] : ''; // Return the first tag or an empty string if not found
+        };
+
+        const blogsWithFirstParagraph = blog.map(blog => {
+            const firstParagraph = extractFirstTag({ html: blog.content });
+            return {
+                ...blog,
+                content: firstParagraph,
+            };
+        });
+
         c.status(200)
-        return c.json({
-            blog
-        })
+        return c.json({ blogs:blogsWithFirstParagraph })
+        
     } catch (e) {
         c.status(411)
         return c.text("Error while fetching auther blog")
