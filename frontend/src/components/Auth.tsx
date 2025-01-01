@@ -4,29 +4,31 @@ import axios from "axios"
 import { ChangeEvent, useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from 'react-toastify';
-import Loader from "./Loader"
+import InitialLoader from "./InitialLoader"
 
 export default function Auth({ type }: { type: "signin" | "signup" }) {
 
     const navigator = useNavigate()
-
-    useEffect(() => {
-
-        axios.get(`${BACKEND_URL}api/v1/user/me`, {
-            headers: {
-                "authorization": localStorage.getItem("token")
-            }
-        }).then(() => {
-            navigator("/blogs")
-        })
-    }, [navigator])
-
     const [postInput, setPostInputs] = useState<UserSchema>({
         name: "",
         email: "",
         password: ""
     })
     const [isLoading, setLoading] = useState(false)
+
+    useEffect(() => {
+        setLoading(true)
+        axios.get(`${BACKEND_URL}api/v1/user/me`, {
+            headers: {
+                "authorization": localStorage.getItem("token")
+            }
+        }).then(() => {
+        setLoading(false)
+            navigator("/blogs")
+        }).finally(()=>{
+            setLoading(false)
+        })
+    }, [navigator])
 
     async function sendRequest(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -45,7 +47,7 @@ export default function Auth({ type }: { type: "signin" | "signup" }) {
     }
 
     return <>
-        <Loader show={isLoading} />
+        <InitialLoader show={isLoading}/>
         <div className="flex w-full md:w-1/2 justify-center items-center bg-white">
             <form className="bg-white w-full max-w-sm px-4 md:w-1/2" onSubmit={sendRequest}>
                 <h2 className="justify-center flex mb-4 text-2xl font-bold">

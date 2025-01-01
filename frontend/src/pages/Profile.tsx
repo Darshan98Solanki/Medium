@@ -1,6 +1,6 @@
 import AppBar from "@/components/AppBar";
 import { InputBox } from "@/components/Auth";
-import Loader from "@/components/Loader";
+import InitialLoader from "@/components/InitialLoader";
 import Quote from "@/components/Quote";
 import { BACKEND_URL } from "@/config";
 import axios from "axios";
@@ -60,7 +60,7 @@ export default function Profile() {
 
     return <>
         <AppBar />
-        <Loader show={loading} />
+        <InitialLoader show={loading} />
         <div className="h-screen md:-mt-5 mt-20 flex flex-col md:flex-row lg:items-center lg:justify-center">
             <div className="flex w-full md:w-1/2 justify-center items-center bg-white">
                 <form className="bg-white w-full max-w-sm px-4" onSubmit={handleUpdate}>

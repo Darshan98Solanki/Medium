@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css'
 import { useBlog } from "@/hooks";
-import Loader from "./Loader";
+import InitialLoader from "./InitialLoader";
 
 export default function Publish() {
 
@@ -88,7 +88,7 @@ export default function Publish() {
 
     return <>
         <AppBar />
-        <Loader show={loading} />
+        <InitialLoader show={loading}/>
         <div className="flex justify-center w-full mt-16">
             <div className="max-w-screen-xl w-full mx-2 xl:mx-0">
                 <input type="text" value={title} className="bg-gray-50 w-full border border-gray-300 text-gray-900 block p-2.5 text-sm rounded-lg " placeholder="Title"

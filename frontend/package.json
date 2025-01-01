@@ -19,6 +19,7 @@
     "react-router-dom": "^7.1.0",
     "react-toastify": "^11.0.2",
     "react-tweet": "^3.2.1",
+    "recoil": "^0.7.7",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7"
   },
