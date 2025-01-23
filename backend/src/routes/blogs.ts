@@ -41,8 +41,6 @@ BlogsRouter.use('/*', async (c, next) => {
 // create blog route
 BlogsRouter.post('/', async (c) => {
 
-    console.log("lol")
-
     const parseData = postBlogSchema.safeParse(await c.req.json())
     const userId = c.get("userId")
 
